@@ -6,8 +6,28 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # JOB 1 : S'occupe du Frontend Angular
+  # 🔍 JOB 1 : L'inspecteur SonarCloud (S'exécute en premier)
+  sonarcloud:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Obligatoire pour que SonarCloud analyse l'historique du code
+
+      - name: Scanner le code avec SonarCloud
+        uses: sonarsource/sonarcloud-github-action@v3
+        with:
+          args: >
+            -Dsonar.organization=salahsaa
+            -Dsonar.projectKey=Salahsaa_mon-projet-docker
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Géré automatiquement par GitHub
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}     # Ton token secret
+
+  # 🚀 JOB 2 : S'occupe du Frontend Angular (Attend SonarCloud)
   build-frontend:
+    needs: sonarcloud # Bloque le build si SonarCloud trouve des bugs critiques
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le code
@@ -26,8 +46,9 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/mon-frontend:latest
 
-  # JOB 2 : S'occupe du Backend Java/Maven (s'exécute en parallèle)
+  # ☕ JOB 3 : S'occupe du Backend Java/Maven (Attend SonarCloud)
   build-backend:
+    needs: sonarcloud # Bloque le build si SonarCloud trouve des bugs critiques
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le code

@@ -29,6 +29,7 @@ jobs:
 
       # 3. On lance le scan sécurisé (SHA) avec l'accès aux librairies compilées
       - name: Scanner le code avec SonarCloud
+        # uses: sonarsource/sonarcloud-github-action@eb21172322312ac6a64f33b1fdb56e792e31969a
         uses: sonarsource/sonarcloud-github-action@eb21172322312ac6a64f33b1fdb56e792e31969a
         with:
           args: >

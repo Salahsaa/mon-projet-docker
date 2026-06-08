@@ -27,14 +27,15 @@ jobs:
       - name: Compiler le Backend Java
         run: mvn -file backend/backend/pom.xml compile
 
-      # 3. On lance le scan en lui indiquant où se trouvent les fichiers compilés
+      # 3. On lance le scan sécurisé (SHA) avec l'accès aux librairies compilées
       - name: Scanner le code avec SonarCloud
-        uses: sonarsource/sonarcloud-github-action@v3
+        uses: sonarsource/sonarcloud-github-action@eb21172322312ac6a64f33b1fdb56e792e31969a
         with:
           args: >
             -Dsonar.organization=salahsaa
             -Dsonar.projectKey=Salahsaa_mon-projet-docker
             -Dsonar.java.binaries=backend/backend/target/classes
+            -Dsonar.java.libraries=/home/runner/.m2/repository/**/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

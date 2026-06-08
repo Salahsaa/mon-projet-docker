@@ -1,8 +1,12 @@
-FROM node:20-alpine
+FROM node:20.18.0-alpine
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+
+# Correction Ligne 4 : Utilisation de 'npm ci' et blocage des scripts malveillants
+RUN npm ci --ignore-scripts
+
 COPY . .
 EXPOSE 4200
-# Le paramètre --poll permet à Docker de détecter tes modifications de code sur Windows/Mac
-CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--poll", "2000"]
+
+# Correction Ligne 8 : On appelle directement le binaire local au lieu de passer par 'npx'
+CMD ["./node_modules/.bin/ng", "serve", "--host", "0.0.0.0", "--poll", "2000"]

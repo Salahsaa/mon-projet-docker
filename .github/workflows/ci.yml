@@ -13,21 +13,35 @@ jobs:
       - name: Récupérer le code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Obligatoire pour que SonarCloud analyse l'historique du code
+          fetch-depth: 0 # Obligatoire pour que SonarCloud analyse l'historique
 
+      # 1. On installe Java sur la machine virtuelle pour pouvoir compiler
+      - name: Configurer JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # 2. On compile le backend pour générer les fichiers .class demandés par Sonar
+      - name: Compiler le Backend Java
+        run: mvn -file backend/backend/pom.xml compile
+
+      # 3. On lance le scan en lui indiquant où se trouvent les fichiers compilés
       - name: Scanner le code avec SonarCloud
         uses: sonarsource/sonarcloud-github-action@v3
         with:
           args: >
             -Dsonar.organization=salahsaa
             -Dsonar.projectKey=Salahsaa_mon-projet-docker
+            -Dsonar.java.binaries=backend/backend/target/classes
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Géré automatiquement par GitHub
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}     # Ton token secret
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # 🚀 JOB 2 : S'occupe du Frontend Angular (Attend SonarCloud)
   build-frontend:
-    needs: sonarcloud # Bloque le build si SonarCloud trouve des bugs critiques
+    needs: sonarcloud
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le code
@@ -48,7 +62,7 @@ jobs:
 
   # ☕ JOB 3 : S'occupe du Backend Java/Maven (Attend SonarCloud)
   build-backend:
-    needs: sonarcloud # Bloque le build si SonarCloud trouve des bugs critiques
+    needs: sonarcloud
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le code

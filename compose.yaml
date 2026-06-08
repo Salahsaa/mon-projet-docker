@@ -1,0 +1,144 @@
+services:
+  # 1. Base de données MySQL
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydb
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # 2. Le Backend Spring Boot
+  backend:
+    build: ./backend/backend
+    container_name: spring_backend
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_NAME: mydb
+      DB_USER: root
+      DB_PASS: root
+    depends_on:
+      - db
+    volumes:
+      - ./backend/backend:/app
+      - ~/.m2:/root/.m2
+
+  # 3. Le Frontend Angular
+  frontend:
+    build: ./frantend
+    container_name: angular_frontend
+    ports:
+      - "4200:4200"
+    environment:
+      - NG_CLI_ANALYTICS=false
+    volumes:
+      - ./frantend:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+
+  # 4. L'interface phpMyAdmin (Pour voir tes tables MySQL !)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:
+
+
+  
+
+
+# services:
+#   # 1. Base de données MySQL
+#   db:
+#     image: mysql:8.0
+#     container_name: mysql_db
+#     environment:
+#       MYSQL_ROOT_PASSWORD: root
+#       MYSQL_DATABASE: mydb
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - mysql_data:/var/lib/mysql
+
+# #  # 2. Le Backend Spring Boot
+# #  backend:
+# #    build: ./backend/backend
+# #    container_name: spring_backend
+# #    ports:
+# #      - "8080:8080"
+# #    environment:
+# #      DB_HOST: db        # C'est le nom du service MySQL ci-dessus !
+# #      DB_NAME: mydb
+# #      DB_USER: root
+# #      DB_PASS: root
+# #    depends_on:
+# #      - db
+# #    volumes:
+# #      - ./backend/backend:/app   # Synchronise le code pour le live reload
+# #      - ~/.m2:/root/.m2  # Évite de retélécharger les dépendances Java à chaque fois
+
+#   # 2. Le Backend Spring Boot
+#   backend:
+#     build: ./backend/backend
+#     container_name: spring_backend
+#     restart: on-failure         # <--- AJOUTE CETTE LIGNE ICI
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       DB_HOST: db
+#       DB_NAME: mydb
+#       DB_USER: root
+#       DB_PASS: root
+#     depends_on:
+#       - db
+#     volumes:
+#       - ./backend/backend:/app
+#       - ~/.m2:/root/.m2
+
+
+# #  # 3. Le Frontend Angular
+# #  frontend:
+# #    build: ./frantend
+# #    container_name: angular_frontend
+# #    ports:
+# #      - "4200:4200"
+# #    volumes:
+# #      - ./frantend:/app  # Synchronise le code pour le Live Reload d'Angular
+# #      - /app/node_modules
+# #    stdin_open: true
+# #    tty: true
+
+
+
+#   # 3. Le Frontend Angular
+#   frontend:
+#     build: ./frantend
+#     container_name: angular_frontend
+#     ports:
+#       - "4200:4200"
+#     environment: # <-- AJOUTE CECI
+#       - NG_CLI_ANALYTICS=false   # <-- AJOUTE CECI
+#     volumes:
+#       - ./frantend:/app
+#       - /app/node_modules
+#     stdin_open: true
+#     tty: true
+
+# volumes:
+#   mysql_data:
+
+

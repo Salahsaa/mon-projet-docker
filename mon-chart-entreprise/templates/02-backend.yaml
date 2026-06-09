@@ -4,7 +4,7 @@ metadata:
   name: backend-deployment
   namespace: prod-apps
 spec:
-  replicas: 2 # Haute disponibilité
+  replicas: 2
   selector:
     matchLabels:
       app: backend
@@ -12,19 +12,22 @@ spec:
     metadata:
       labels:
         app: backend
-    spec: # 🟢 Corrigé : bien aligné à l'intérieur du bloc template
+    spec:
+      automountServiceAccountToken: false # 🔐 Sécurité : Bloque le vol de token
       containers:
       - name: backend
-        image: saadaouisalaheddine/mon-backend:latest
+        image: saadaouisalaheddine/mon-backend:1.0.0 # 🏷️ Version explicite au lieu de latest
         ports:
         - containerPort: 8080
         resources:
           requests:
             cpu: "100m"
             memory: "256Mi"
+            ephemeral-storage: "512Mi" # 💾 Limite d'espace disque requise par Sonar
           limits:
             cpu: "500m"
             memory: "512Mi"
+            ephemeral-storage: "1Gi"
         env:
         - name: SPRING_DATASOURCE_URL
           valueFrom:

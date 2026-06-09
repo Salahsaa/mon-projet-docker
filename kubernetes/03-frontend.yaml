@@ -13,18 +13,21 @@ spec:
       labels:
         app: frontend
     spec:
+      automountServiceAccountToken: false # 🔐 Sécurité
       containers:
       - name: frontend
-        image: saadaouisalaheddine/mon-frontend:latest
+        image: saadaouisalaheddine/mon-frontend:1.0.0 # 🏷️ Version explicite
         ports:
         - containerPort: 4200
         resources:
           requests:
             cpu: "100m"
             memory: "128Mi"
+            ephemeral-storage: "256Mi" # 💾 Espace disque
           limits:
             cpu: "250m"
             memory: "256Mi"
+            ephemeral-storage: "512Mi"
 ---
 apiVersion: v1
 kind: Service

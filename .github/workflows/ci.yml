@@ -59,7 +59,8 @@ jobs:
         with:
           context: ./frantend
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/mon-frontend:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/mon-frontend:1.0.0
+          # tags: ${{ secrets.DOCKER_USERNAME }}/mon-frontend:latest
 
   # ☕ JOB 3 : S'occupe du Backend Java/Maven (Attend SonarCloud)
   build-backend:
@@ -80,4 +81,5 @@ jobs:
         with:
           context: ./backend/backend
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/mon-backend:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/mon-backend:1.0.0
+          # tags: ${{ secrets.DOCKER_USERNAME }}/mon-backend:latest
